@@ -38,6 +38,22 @@ class BST{
             inorder(root->right);
         }
     }
+    
+    void preorder(Node* root){  // preorder traversal -> Root, Left, Right;
+        if(root!=NULL){
+            cout<<root->data<<' ';
+            preorder(root->left);
+            preorder(root->right);
+        }
+    }
+    
+    void postorder(Node* root){  // postorder traversal -> Left, Right, Root;
+        if(root!=NULL){
+            postorder(root->left);
+            postorder(root->right);
+            cout<<root->data<<' ';
+        }
+    }
 };
 
 int main() {
@@ -49,7 +65,12 @@ int main() {
 	    cin>> val;
 	    root = btree.insert(root, val); 
 	}
+	cout<<"Inorder : ";
 	btree.inorder(root);
+	cout<<endl<<"Preorder : ";
+	btree.preorder(root);
+	cout<<endl<< "Postorder : ";
+	btree.postorder(root);
 	delete root;
 	return 0;
 }
