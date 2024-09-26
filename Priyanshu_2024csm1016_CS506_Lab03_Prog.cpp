@@ -1,14 +1,21 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+/*
+    I have the same struct to create node for BST and AVL.
+    In BST, I have not updated the height.
+    In AVL, I have not updated the parent.
+*/
+
 struct Node{
-    int data;
+    int data, height;
     Node* parent;
     Node* left;
     Node* right;
     
-    Node(int val, Node* p) : data(val), parent(p){
-        left = right = NULL;
+    Node(int val) : data(val){
+        parent = left = right = NULL;
+        height = 1;
     }
 };
 
@@ -21,9 +28,9 @@ class BST{
             return node;
         }
     public:
-        Node* insert(Node* root, int val){
+        Node* insert(Node* root, int val){  //iterative insertion
             Node* tRoot = root;
-            Node* node = new Node(val, NULL);  // create the node to be inserted
+            Node* node = new Node(val);  // create the node to be inserted
             if(root == NULL) return node;  // the tree is empty
             Node* p = root;  // stores the parent for the new node
             while(root!=NULL){
@@ -37,7 +44,7 @@ class BST{
             else if(val > p->data) p->right = node;
             return tRoot;
         }
-        Node* deleteNode(Node* root, int val){
+        Node* deleteNode(Node* root, int val){  // iterative deletion
             Node* tRoot = root;
             
             //search for the target node in the tree
@@ -124,6 +131,99 @@ class BST{
             return tRoot;
         }
 }btree;
+
+class AVL{
+    private:
+        int height(Node* node){
+            if(node==NULL) return 0;
+            return node->height;
+        }
+        int getBalance(Node* node){
+            if(node==NULL) return 0;
+            return height(node->left) - height(node->right);
+        }
+        Node* leftRotation(Node* node){
+            // store the nodes which will be updated
+            Node* temp1 = node->right;
+            Node* temp2 = temp1->left;
+            
+            // apply rotation
+            temp1->left = node;
+            node->right = temp2;
+            
+            // update height of the nodes accordingly
+            node->height = 1 + max(height(node->left), height(node->right));
+            temp1->height = 1 + max(height(temp1->left), height(temp1->right));
+            
+            // retun updated root
+            return temp1;
+        }
+        Node* rightRotation(Node* node){
+            // store the nodes which will be updated
+            Node* temp1 = node->left;
+            Node* temp2 = temp1->right;
+            
+            // apply rotation
+            temp1->right = node;
+            node->left = temp2;
+            
+            // update the height of the nodes accordingly
+            node->height = 1 + max(height(node->left), height(node->right));
+            temp1->height = 1 + max(height(temp1->left), height(temp1->right));
+            
+            // return the updated root
+            return temp1;
+        }
+        
+    public:
+        Node* insert(Node* root, int val){
+            // if the tree is empty
+            if(root==NULL) return new Node(val);
+            
+            // if the tree contains node, insert a new node like we inserted in BST
+            if(val<root->data){
+                root->left = insert(root->left, val);
+            }
+            else if(val>root->data){
+                root->right = insert(root->right, val);
+            }
+            else{ // equal values not allowed
+                return root;
+            }
+            
+            // update height of the parent node
+            root->height = 1 + max(height(root->left), height(root->right));
+            
+            // get the balance factor of the parent node
+            int imbalance = getBalance(root);
+            
+            // let's consider cases of height imbalance - LL, LR, RL, RR
+            
+            // Left Left imbalance i.e. right rotation
+            if(imbalance>1 && val<root->left->data){
+                return rightRotation(root);
+            }
+            
+            // Left Right imbalance i.e. left roation + right rotation
+            if(imbalance>1 && val>root->left->data){
+                root->left = leftRotation(root->left);
+                return rightRotation(root);
+            }
+            
+            // Right Right imbalance i.e left rotation
+            if(imbalance<-1 && val>root->right->data){
+                return leftRotation(root);
+            }
+            
+            // Right Left imbalance i.e. right rotation + left rotation
+            if(imbalance<-1 && val<root->right->data){
+                root->right = rightRotation(root->right);
+                return leftRotation(root);
+            }
+            
+            return root;
+        }
+}avl;
 
 class Traversals{
   public:
@@ -219,10 +319,10 @@ int main() {
     	        break;
     	    }
     	    int val;
+    	    int n;
     	    switch(query){
     	        case 'B':
     	            flag = 0;
-    	            int n;
     	            cin>>n;
     	            while(n--){
     	                int val;
@@ -234,6 +334,14 @@ int main() {
     	            break;
     	        case 'A':
     	            flag = 1;
+    	            cin>>n;
+    	            while(n--){
+    	                int val;
+    	                cin>>val;
+    	                if(val==0);  // do nothing if the value is zero
+    	                if(val>0) root = avl.insert(root, val);
+    	                if(val<0); // update the delete in avl
+    	            }
     	            break;
     	        case 'I':
     	            cin>>val;
