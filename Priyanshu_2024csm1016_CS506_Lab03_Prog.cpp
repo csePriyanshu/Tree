@@ -21,7 +21,7 @@ class BST{
         Node* p = root;  // stores the parent for the new node
         while(root!=NULL){
             p = root; // update parent for the new node
-            if(val == root->data) return root;
+            if(val == root->data) return tRoot;
             if(val < root->data) root = root->left;
             else if(val > root->data) root = root->right;
         }
@@ -30,7 +30,10 @@ class BST{
         else if(val > p->data) p->right = node;
         return tRoot;
     }
-    
+}btree;
+
+class Traversals{
+  public:
     void inorder(Node* root){  // inorder traversal -> Left, Root, Right;
         if(root!=NULL){
             inorder(root->left);
@@ -54,23 +57,29 @@ class BST{
             cout<<root->data<<' ';
         }
     }
-};
+}traversals;
 
 int main() {
 	Node* root = NULL;
-	BST btree;
-	int n =6;
-	while(n--){
-	    int val;
-	    cin>> val;
-	    root = btree.insert(root, val); 
+	int test;
+	cin>>test;
+	while(test--){  // run the code snipet for the number of test cases
+	    int n;
+	    cin>>n;
+    	while(n--){
+    	    int val;
+    	    cin>> val;
+    	    root = btree.insert(root, val); 
+    	}
+    	
+    	cout<<"Inorder : ";
+    	traversals.inorder(root);
+    	cout<<endl<<"Preorder : ";
+    	traversals.preorder(root);
+    	cout<<endl<< "Postorder : ";
+    	traversals.postorder(root);
+    	cout<<endl;
+    	delete root;
 	}
-	cout<<"Inorder : ";
-	btree.inorder(root);
-	cout<<endl<<"Preorder : ";
-	btree.preorder(root);
-	cout<<endl<< "Postorder : ";
-	btree.postorder(root);
-	delete root;
 	return 0;
 }
