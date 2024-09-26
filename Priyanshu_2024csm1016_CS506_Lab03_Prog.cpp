@@ -30,6 +30,13 @@ class BST{
         else if(val > p->data) p->right = node;
         return tRoot;
     }
+    Node* deleteNode(Node* root, int val){
+        Node* tRoot = root;
+        
+        //write the code to delete an element 
+        
+        return tRoot;
+    }
 }btree;
 
 class Traversals{
@@ -59,11 +66,20 @@ class Traversals{
     }
 }traversals;
 
+// delete the tree
+void deleteTree(Node* root){
+    if(root==NULL) return;
+    deleteTree(root->left);
+    deleteTree(root->right);
+    delete root;
+    return;
+}
+
 int main() {
-	Node* root = NULL;
 	int test;
 	cin>>test;
 	while(test--){  // run the code snipet for the number of test cases
+	    Node* root = NULL;
 	    int n;
 	    cin>>n;
     	while(n--){
@@ -71,7 +87,12 @@ int main() {
     	    cin>> val;
     	    root = btree.insert(root, val); 
     	}
-    	
+    	char c;
+    	cin>>c;
+    	if(c=='D'){
+    	    deleteTree(root);
+    	    continue;
+    	}
     	cout<<"Inorder : ";
     	traversals.inorder(root);
     	cout<<endl<<"Preorder : ";
