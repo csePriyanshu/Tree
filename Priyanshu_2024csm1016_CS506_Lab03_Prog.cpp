@@ -13,31 +13,116 @@ struct Node{
 };
 
 class BST{
-  public:
-    Node* insert(Node* root, int val){
-        Node* tRoot = root;
-        Node* node = new Node(val, NULL);  // create the node to be inserted
-        if(root == NULL) return node;  // the tree is empty
-        Node* p = root;  // stores the parent for the new node
-        while(root!=NULL){
-            p = root; // update parent for the new node
-            if(val == root->data) return tRoot; // value already present
-            if(val < root->data) root = root->left;
-            else if(val > root->data) root = root->right;
+    private:
+        Node* getMin(Node* node){
+            while(node && node->left){
+                node->left;
+            }
+            return node;
         }
-        node->parent = p;
-        if(val < p->data) p->left = node;
-        else if(val > p->data) p->right = node;
-        return tRoot;
-    }
-    Node* deleteNode(Node* root, int val){
-        Node* tRoot = root;
-        
-        //write the code to delete an element 
-        cout<< "deleted node " << val << endl;
-        
-        return tRoot;
-    }
+    public:
+        Node* insert(Node* root, int val){
+            Node* tRoot = root;
+            Node* node = new Node(val, NULL);  // create the node to be inserted
+            if(root == NULL) return node;  // the tree is empty
+            Node* p = root;  // stores the parent for the new node
+            while(root!=NULL){
+                p = root; // update parent for the new node
+                if(val == root->data) return tRoot; // value already present
+                if(val < root->data) root = root->left;
+                else if(val > root->data) root = root->right;
+            }
+            node->parent = p;
+            if(val < p->data) p->left = node;
+            else if(val > p->data) p->right = node;
+            return tRoot;
+        }
+        Node* deleteNode(Node* root, int val){
+            Node* tRoot = root;
+            
+            //search for the target node in the tree
+            while(root!=NULL){
+                if(val==root->data) break;
+                else if(val<root->data) root = root->left;
+                else root = root->right;
+            }
+            
+            // target is not present in the tree
+            if(root == NULL) return tRoot;
+            
+            Node* parent = root->parent;
+            
+            // if the target node has 0 child
+            if(root->left==NULL && root->right==NULL){
+                if(parent==NULL){ // the target node is the root node
+                    tRoot = NULL;
+                } 
+                else{
+                    if(root->data<parent->data){
+                        parent->left = NULL;
+                    }
+                    else if(root->data>parent->data){
+                        parent->right = NULL;
+                    }
+                }
+                delete root;
+                return tRoot;
+            }
+            
+            // if the target node has only left child
+            if(root->right==NULL){
+                if(parent==NULL){
+                    tRoot = root->left;
+                }
+                else{
+                    if(root->data<parent->data){
+                        parent->left = root->left;
+                    }
+                    else if(root->data>parent->data){
+                        parent->right = root->left;
+                    }
+                }
+                delete root;
+                return tRoot;
+            }
+            
+            // if the target node has only right child
+            if(root->left==NULL){
+                if(parent==NULL){
+                    tRoot = root->right;
+                }
+                else{
+                    if(root->data<parent->data){
+                        parent->left = root->right;
+                    }
+                    else if(root->data>parent->data){
+                        parent->right = root->right;
+                    }
+                }
+                delete root;
+                return tRoot;
+            }
+            
+            // if the target node has both children
+            if(root->left!=NULL && root->right!=NULL){
+                Node* successor = getMin(root->right);
+                
+                root->data = successor->data;
+                if(successor->data>successor->parent->data){
+                    successor->parent->right = NULL;
+                }
+                else if(successor->data<successor->parent->data){
+                    successor->parent->left = NULL;
+                }
+                if(successor->right){
+                    successor->right->parent = successor->parent;
+                }
+                delete successor;
+                return tRoot;
+            }
+            
+            return tRoot;
+        }
 }btree;
 
 class Traversals{
@@ -75,6 +160,8 @@ class Traversals{
     }
 }traversals;
 
+
+
 // delete the tree
 void deleteTree(Node* root){
     if(root==NULL) return;
@@ -89,6 +176,7 @@ int main() {
 	cin>>test;
 	while(test--){  // run the code snipet for the number of test cases
 	    Node* root = NULL;
+	    bool flag; // to switch between AVL(1) and BST(0) trees
 	    while(1){
 	        char query;
     	    cin>>query;
@@ -97,8 +185,10 @@ int main() {
     	        if(root!= NULL) deleteTree(root);
     	        break;
     	    }
+    	    int val;
     	    switch(query){
     	        case 'B':
+    	            flag = 0;
     	            int n;
     	            cin>>n;
     	            while(n--){
@@ -106,14 +196,38 @@ int main() {
     	                cin>>val;
     	                if(val==0); // do nothing if the value is zero
     	                if(val>0) root = btree.insert(root, val); // insert on +ve value
-    	                if(val<0) btree.deleteNode(root, val*-1); // delete on -ve value
+    	                if(val<0) root = btree.deleteNode(root, val*-1); // delete on -ve value
     	            }
     	            break;
     	        case 'A':
+    	            flag = 1;
     	            break;
     	        case 'I':
+    	            cin>>val;
+    	            if(val<=0) break;
+    	            // the tree is empty, add the element as the first node of a BST
+    	            if(root==NULL){
+    	                root = btree.insert(root, val);
+    	                break;
+    	            }
+    	            //tree is not empty
+    	            if(flag){
+    	                //insert in AVL
+    	            }
+    	            else{
+    	                //insert in BST
+    	                root = btree.insert(root, val);
+    	            }
     	            break;
     	        case 'R':
+    	            cin>>val;
+    	            if(val<=0) break;
+    	            if(flag){ // working on AVL tree
+    	                // delete code here...
+    	            }
+    	            else{
+    	                root = btree.deleteNode(root, val);
+    	            }
     	            break;
     	        case 'F':
     	            int key;
