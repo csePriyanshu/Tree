@@ -160,7 +160,37 @@ class Traversals{
     }
 }traversals;
 
-
+class TreeMetrics{
+    public:
+        int getHeight(Node* root){
+            if(root==NULL){
+                return -1;
+            }
+            
+            int lHeight = getHeight(root->left);
+            int rHeight = getHeight(root->right);
+            
+            return max(lHeight, rHeight) + 1;
+        }
+        int getLeafNodes(Node* root){
+            if(root==NULL){
+                return 0;
+            }
+            if(root->left==NULL && root->right==NULL){
+                return 1;
+            }
+            
+            return getLeafNodes(root->left) + getLeafNodes(root->right);
+        }
+        int getTotalNodes(Node* root){
+            if(root==NULL) return 0;
+            
+            int l = getTotalNodes(root->left);
+            int r = getTotalNodes(root->right);
+            
+            return 1+l+r;
+        }
+}metrics;
 
 // delete the tree
 void deleteTree(Node* root){
@@ -182,7 +212,10 @@ int main() {
     	    cin>>query;
     	    if(query=='D'){  // switch to the next test
     	        // clear the memory if any memory is occupied by the tree
-    	        if(root!= NULL) deleteTree(root);
+    	        if(root!= NULL){
+    	            deleteTree(root);
+    	            root = NULL; // to avoid dangling pointer
+    	        }
     	        break;
     	    }
     	    int val;
@@ -243,8 +276,10 @@ int main() {
     	            }
     	            break;
     	        case 'L':
+    	            cout<< metrics.getLeafNodes(root) << endl;
     	            break;
     	        case 'N':
+    	            cout << metrics.getTotalNodes(root) << endl;
     	            break;
     	        case 'Q':
     	            traversals.inorder(root);
@@ -259,6 +294,7 @@ int main() {
     	            cout<<endl;
     	            break;
     	        case 'H':
+    	            cout<< metrics.getHeight(root) << endl;
     	            break;
     	        case 'M':
     	            break;
