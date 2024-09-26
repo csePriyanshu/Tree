@@ -21,7 +21,7 @@ class BST{
         Node* p = root;  // stores the parent for the new node
         while(root!=NULL){
             p = root; // update parent for the new node
-            if(val == root->data) return tRoot;
+            if(val == root->data) return tRoot; // value already present
             if(val < root->data) root = root->left;
             else if(val > root->data) root = root->right;
         }
@@ -34,6 +34,7 @@ class BST{
         Node* tRoot = root;
         
         //write the code to delete an element 
+        cout<< "deleted node " << val << endl;
         
         return tRoot;
     }
@@ -41,6 +42,14 @@ class BST{
 
 class Traversals{
   public:
+    bool search(Node* root, int key){
+        while(root!=NULL){
+            if(key==root->data) return 1; // key found
+            else if(key<root->data) root = root->left; // key present in left subtree
+            else root = root->right; // key present in right subtree
+        }
+        return 0; // key not found
+    }
     void inorder(Node* root){  // inorder traversal -> Left, Root, Right;
         if(root!=NULL){
             inorder(root->left);
@@ -79,28 +88,78 @@ int main() {
 	int test;
 	cin>>test;
 	while(test--){  // run the code snipet for the number of test cases
-		Node* root = NULL;
-		int n;
-		cin>>n;
-	    	while(n--){
-	    	    int val;
-	    	    cin>> val;
-	    	    root = btree.insert(root, val); 
-	    	}
-	    	char c;
-	    	cin>>c;
-	    	if(c=='D'){
-	    	    deleteTree(root);
-	    	    continue;
-	    	}
-	    	cout<<"Inorder : ";
-	    	traversals.inorder(root);
-	    	cout<<endl<<"Preorder : ";
-	    	traversals.preorder(root);
-	    	cout<<endl<< "Postorder : ";
-	    	traversals.postorder(root);
-	    	cout<<endl;
-	    	delete root;
+	    Node* root = NULL;
+	    while(1){
+	        char query;
+    	    cin>>query;
+    	    if(query=='D'){  // switch to the next test
+    	        // clear the memory if any memory is occupied by the tree
+    	        if(root!= NULL) deleteTree(root);
+    	        break;
+    	    }
+    	    switch(query){
+    	        case 'B':
+    	            int n;
+    	            cin>>n;
+    	            while(n--){
+    	                int val;
+    	                cin>>val;
+    	                if(val==0); // do nothing if the value is zero
+    	                if(val>0) root = btree.insert(root, val); // insert on +ve value
+    	                if(val<0) btree.deleteNode(root, val*-1); // delete on -ve value
+    	            }
+    	            break;
+    	        case 'A':
+    	            break;
+    	        case 'I':
+    	            break;
+    	        case 'R':
+    	            break;
+    	        case 'F':
+    	            int key;
+    	            cin>>key;
+    	            if(key<=0){
+    	                cout<<"No\n";
+    	                break;
+    	            }
+    	            if(traversals.search(root, key)){
+    	                cout<<"Yes\n";
+    	            }else{
+    	                cout<<"No\n";
+    	            }
+    	            break;
+    	        case 'L':
+    	            break;
+    	        case 'N':
+    	            break;
+    	        case 'Q':
+    	            traversals.inorder(root);
+    	            cout<<endl;
+    	            break;
+    	        case 'W':
+    	            traversals.preorder(root);
+    	            cout<<endl;
+    	            break;
+    	        case 'E':
+    	            traversals.postorder(root);
+    	            cout<<endl;
+    	            break;
+    	        case 'H':
+    	            break;
+    	        case 'M':
+    	            break;
+    	        case 'C':
+    	            break;
+    	        case 'Z':
+    	            break;
+    	        case 'Y':
+    	            break;
+    	        case 'K':
+    	            deleteTree(root);
+    	            root = NULL; // to avoid dangling pointer
+    	            break;
+    	    }
+	    }
 	}
 	return 0;
 }
