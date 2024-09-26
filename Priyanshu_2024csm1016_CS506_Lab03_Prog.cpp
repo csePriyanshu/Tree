@@ -79,28 +79,28 @@ int main() {
 	int test;
 	cin>>test;
 	while(test--){  // run the code snipet for the number of test cases
-	    Node* root = NULL;
-	    int n;
-	    cin>>n;
-    	while(n--){
-    	    int val;
-    	    cin>> val;
-    	    root = btree.insert(root, val); 
-    	}
-    	char c;
-    	cin>>c;
-    	if(c=='D'){
-    	    deleteTree(root);
-    	    continue;
-    	}
-    	cout<<"Inorder : ";
-    	traversals.inorder(root);
-    	cout<<endl<<"Preorder : ";
-    	traversals.preorder(root);
-    	cout<<endl<< "Postorder : ";
-    	traversals.postorder(root);
-    	cout<<endl;
-    	delete root;
+		Node* root = NULL;
+		int n;
+		cin>>n;
+	    	while(n--){
+	    	    int val;
+	    	    cin>> val;
+	    	    root = btree.insert(root, val); 
+	    	}
+	    	char c;
+	    	cin>>c;
+	    	if(c=='D'){
+	    	    deleteTree(root);
+	    	    continue;
+	    	}
+	    	cout<<"Inorder : ";
+	    	traversals.inorder(root);
+	    	cout<<endl<<"Preorder : ";
+	    	traversals.preorder(root);
+	    	cout<<endl<< "Postorder : ";
+	    	traversals.postorder(root);
+	    	cout<<endl;
+	    	delete root;
 	}
 	return 0;
 }
