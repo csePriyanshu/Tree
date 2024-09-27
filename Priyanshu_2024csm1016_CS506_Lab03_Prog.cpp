@@ -292,6 +292,50 @@ class TreeMetrics{
         }
 }metrics;
 
+class Misc{
+    private:
+        int search(vector<int> in, int key, int n){
+            for(int i=0; i<n; i++){
+                if(in[i] == key) return i;
+            }
+            return -1;
+        }
+    public:
+        void postorder(vector<int> in, vector<int> pre, int n){
+            int root = search(in, pre[0], n);
+            vector<int> sub_pre(pre.begin() + 1, pre.end());
+            vector<int> sub_in(in.begin()+root+1, in.end());
+            vector<int> sub_pre1(pre.begin()+root+1, pre.end());
+            if(root!=0) postorder(in, sub_pre, root);
+            if(root!=n-1) postorder(sub_in, sub_pre1, n-root-1);
+            cout<<pre[0]<<' ';
+        }
+        void preorder(vector<int> in, vector<int> post, int n){
+            int root = search(in, post[n-1], n);
+            vector<int> sub_post(post.begin(), post.begin()+root);
+            vector<int> sub_in(in.begin()+root+1, in.end());
+            vector<int> sub_post1(post.begin()+root, post.end());
+            cout<<post[n-1]<<' ';
+            if(root!=0) preorder(in, sub_post, root);
+            if(root!=n-1) preorder(sub_in, sub_post1, n-root-1);
+        }
+        int findlca(Node* root, int k1, int k2){
+            if(root==NULL) return -1;
+            if(k1>root->data && k2>root->data) return findlca(root->right, k1, k2);
+            else if(k1<root->data && k2<root->data) return findlca(root->left, k1, k2);
+            return root->data;
+        }
+        int lca(Node* root, int val1, int val2){
+            if(traversals.search(root, val1)==0 || traversals.search(root, val2)==0){
+                return -1;
+            }
+            if(val1 == val2){
+                return val1;
+            }
+            return findlca(root, val1, val2);
+        }
+}misc;
+
 // delete the tree
 void deleteTree(Node* root){
     if(root==NULL) return;
@@ -407,11 +451,48 @@ int main() {
     	        case 'M':
     	            break;
     	        case 'C':
+    	            int k1, k2;
+    	            cin>>k1>>k2;
+    	            cout<< misc.lca(root, k1, k2) << endl;
     	            break;
     	        case 'Z':
+    	        {
+    	            cin>>n;
+    	            vector<int> inorder;
+    	            vector<int> preorder;
+    	            int n1 = n;
+    	            while(n1--){
+    	                cin>>val;
+    	                preorder.emplace_back(val);
+    	            }
+    	            n1=n;
+    	            while(n1--){
+    	                cin>>val;
+    	                inorder.emplace_back(val);
+    	            }
+    	            misc.postorder(inorder, preorder, n);
+    	            cout<<endl;
     	            break;
+    	        }
     	        case 'Y':
+    	        {
+    	            cin>>n;
+    	            vector<int> inorder;
+    	            vector<int> postorder;
+    	            int n1 = n;
+    	            while(n1--){
+    	                cin>>val;
+    	                postorder.emplace_back(val);
+    	            }
+    	            n1=n;
+    	            while(n1--){
+    	                cin>>val;
+    	                inorder.emplace_back(val);
+    	            }
+    	            misc.preorder(inorder, postorder, n);
+    	            cout<<endl;
     	            break;
+    	        }
     	        case 'K':
     	            deleteTree(root);
     	            root = NULL; // to avoid dangling pointer
