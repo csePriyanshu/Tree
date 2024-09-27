@@ -142,6 +142,12 @@ class AVL{
             if(node==NULL) return 0;
             return height(node->left) - height(node->right);
         }
+        Node* getMin(Node* node){
+            while(node && node->left){
+                node->left;
+            }
+            return node;
+        }
         Node* leftRotation(Node* node){
             // store the nodes which will be updated
             Node* temp1 = node->right;
@@ -223,6 +229,62 @@ class AVL{
             
             return root;
         }
+        Node* deleteNode(Node* root, int key){
+            if(root==NULL) return root;
+            
+            if(key<root->data) root->left = deleteNode(root->left, key);
+            else if(key>root->data) root->right = deleteNode(root->right, key);
+            else{ // perform the delete operation
+                // if node has 0 or 1 child
+                if(root->left==NULL || root->right==NULL){
+                    Node* temp = root->left ? root->left : root->right;
+                    if(temp==NULL){ // no child
+                        temp == root;
+                        root = NULL;
+                    }else{ // 1 child
+                        *root = *temp;
+                    }
+                    delete temp; // free the memory allocated to the deleted node
+                }else{ // both children present
+                    Node* temp = getMin(root->right);
+                    root->data = temp->data;
+                    root->right = deleteNode(root->right, temp->data);
+                }
+            }
+            
+            if(root==NULL) return root;
+            
+            // update height of the parent node
+            root->height = 1 + max(height(root->left), height(root->right));
+            
+            int balance = getBalance(root);
+            
+            // Left Left Case
+            if (balance > 1 && 
+                getBalance(root->left) >= 0)
+                return rightRotation(root);
+        
+            // Left Right Case
+            if (balance > 1 && 
+                getBalance(root->left) < 0) {
+                root->left = leftRotation(root->left);
+                return rightRotation(root);
+            }
+        
+            // Right Right Case
+            if (balance < -1 && 
+                getBalance(root->right) <= 0)
+                return leftRotation(root);
+        
+            // Right Left Case
+            if (balance < -1 && 
+                getBalance(root->right) > 0) {
+                root->right = rightRotation(root->right);
+                return leftRotation(root);
+            }
+        
+            return root;
+        }
 }avl;
 
 class Traversals{
@@ -257,6 +319,46 @@ class Traversals{
             postorder(root->right);
             cout<<root->data<<' ';
         }
+    }
+    
+    // Boundary traversing - clockwise
+    void leaves(Node* root){
+        if(root==NULL) return;
+        leaves(root->right);
+        if(root->left==NULL && root->right==NULL) cout<< root->data<<' ';
+        leaves(root->left);
+    }
+    void boundaryRight(Node* root){
+        if(root==NULL) return;
+        if(root->right){
+            cout<<root->data<<' ';
+            boundaryRight(root->right);
+        }else if(root->left){
+            cout<<root->data<<' ';
+            boundaryRight(root->left);
+        }
+    }
+    void boundaryLeft(Node* root){
+        if(root==NULL) return;
+        if(root->left){
+            boundaryLeft(root->left);
+            cout<<root->data<<' ';
+        }else if(root->right){
+            boundaryLeft(root->right);
+            cout<<root->right<<' ';
+        }
+    }
+    void boundary(Node* root){
+        if(root==NULL) return;
+        
+        cout<<root->data<<' ';  // print root
+        
+        boundaryRight(root->right); //print right boundary
+        
+        leaves(root->right); // print leaves of right subtree
+        leaves(root->left); // print leaves of left subtree
+        
+        boundaryLeft(root->left); // print left boundary counter-clockwise
     }
 }traversals;
 
@@ -384,7 +486,7 @@ int main() {
     	                cin>>val;
     	                if(val==0);  // do nothing if the value is zero
     	                if(val>0) root = avl.insert(root, val);
-    	                if(val<0); // update the delete in avl
+    	                if(val<0) root = avl.deleteNode(root, val*-1);
     	            }
     	            break;
     	        case 'I':
@@ -398,6 +500,7 @@ int main() {
     	            //tree is not empty
     	            if(flag){
     	                //insert in AVL
+    	                root = avl.insert(root, val);
     	            }
     	            else{
     	                //insert in BST
@@ -408,7 +511,7 @@ int main() {
     	            cin>>val;
     	            if(val<=0) break;
     	            if(flag){ // working on AVL tree
-    	                // delete code here...
+    	                root = avl.deleteNode(root, val);
     	            }
     	            else{
     	                root = btree.deleteNode(root, val);
@@ -449,6 +552,8 @@ int main() {
     	            cout<< metrics.getHeight(root) << endl;
     	            break;
     	        case 'M':
+    	            traversals.boundary(root);
+    	            cout<<endl;
     	            break;
     	        case 'C':
     	            int k1, k2;
