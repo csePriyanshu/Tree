@@ -405,6 +405,7 @@ class Misc{
     public:
         void postorder(vector<int> in, vector<int> pre, int n){
             int root = search(in, pre[0], n);
+            if (root < 0 || root >= n) return;
             vector<int> sub_pre(pre.begin() + 1, pre.end());
             vector<int> sub_in(in.begin()+root+1, in.end());
             vector<int> sub_pre1(pre.begin()+root+1, pre.end());
@@ -414,9 +415,10 @@ class Misc{
         }
         void preorder(vector<int> in, vector<int> post, int n){
             int root = search(in, post[n-1], n);
+            if (root < 0 || root >= n) return;
             vector<int> sub_post(post.begin(), post.begin()+root);
             vector<int> sub_in(in.begin()+root+1, in.end());
-            vector<int> sub_post1(post.begin()+root, post.end());
+            vector<int> sub_post1(post.begin()+root, post.end()-1);
             cout<<post[n-1]<<' ';
             if(root!=0) preorder(in, sub_post, root);
             if(root!=n-1) preorder(sub_in, sub_post1, n-root-1);
