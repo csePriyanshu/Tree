@@ -45,90 +45,29 @@ class BST{
             return tRoot;
         }
         Node* deleteNode(Node* root, int val){  // iterative deletion
-            Node* tRoot = root;
+            if(root==NULL) return root;
             
-            //search for the target node in the tree
-            while(root!=NULL){
-                if(val==root->data) break;
-                else if(val<root->data) root = root->left;
-                else root = root->right;
+            if(val<root->data) root->left = deleteNode(root->left, val);
+            else if(val>root->data) root->right = deleteNode(root->right, val);
+            else{ // perform delete operation
+                // if node has 0 or 1 child
+                if(root->left==NULL || root->right==NULL){
+                    Node* temp = root->left ? root->left : root->right;
+                    if(temp==NULL){ // no child
+                        temp == root;
+                        root = NULL;
+                    }else{ // 1 child
+                        *root = *temp;
+                    }
+                    delete temp; // free the memory allocated to the deleted node
+                }else{ // both children present
+                    Node* temp = getMin(root->right);
+                    root->data = temp->data;
+                    root->right = deleteNode(root->right, temp->data);
+                }
             }
             
-            // target is not present in the tree
-            if(root == NULL) return tRoot;
-            
-            Node* parent = root->parent;
-            
-            // if the target node has 0 child
-            if(root->left==NULL && root->right==NULL){
-                if(parent==NULL){ // the target node is the root node
-                    tRoot = NULL;
-                } 
-                else{
-                    if(root->data<parent->data){
-                        parent->left = NULL;
-                    }
-                    else if(root->data>parent->data){
-                        parent->right = NULL;
-                    }
-                }
-                delete root;
-                return tRoot;
-            }
-            
-            // if the target node has only left child
-            if(root->right==NULL){
-                if(parent==NULL){
-                    tRoot = root->left;
-                }
-                else{
-                    if(root->data<parent->data){
-                        parent->left = root->left;
-                    }
-                    else if(root->data>parent->data){
-                        parent->right = root->left;
-                    }
-                }
-                delete root;
-                return tRoot;
-            }
-            
-            // if the target node has only right child
-            if(root->left==NULL){
-                if(parent==NULL){
-                    tRoot = root->right;
-                }
-                else{
-                    if(root->data<parent->data){
-                        parent->left = root->right;
-                    }
-                    else if(root->data>parent->data){
-                        parent->right = root->right;
-                    }
-                }
-                delete root;
-                return tRoot;
-            }
-            
-            // if the target node has both children
-            if(root->left!=NULL && root->right!=NULL){
-                Node* successor = getMin(root->right);
-                
-                root->data = successor->data;
-                if(successor->data>successor->parent->data){
-                    successor->parent->right = NULL;
-                }
-                else if(successor->data<successor->parent->data){
-                    successor->parent->left = NULL;
-                }
-                if(successor->right){
-                    successor->right->parent = successor->parent;
-                }
-                delete successor;
-                return tRoot;
-            }
-            
-            return tRoot;
+            return root;
         }
 }btree;
 
@@ -297,27 +236,30 @@ class Traversals{
         }
         return 0; // key not found
     }
-    void inorder(Node* root){  // inorder traversal -> Left, Root, Right;
+    void inorder(Node* root, bool& printed){  // inorder traversal -> Left, Root, Right;
         if(root!=NULL){
-            inorder(root->left);
+            inorder(root->left, printed);
             cout<<root->data<<' ';
-            inorder(root->right);
+            printed = true;
+            inorder(root->right, printed);
         }
     }
     
-    void preorder(Node* root){  // preorder traversal -> Root, Left, Right;
+    void preorder(Node* root, bool& printed){  // preorder traversal -> Root, Left, Right;
         if(root!=NULL){
             cout<<root->data<<' ';
-            preorder(root->left);
-            preorder(root->right);
+            printed = true;
+            preorder(root->left, printed);
+            preorder(root->right, printed);
         }
     }
     
-    void postorder(Node* root){  // postorder traversal -> Left, Right, Root;
+    void postorder(Node* root, bool& printed){  // postorder traversal -> Left, Right, Root;
         if(root!=NULL){
-            postorder(root->left);
-            postorder(root->right);
+            postorder(root->left, printed);
+            postorder(root->right, printed);
             cout<<root->data<<' ';
+            printed = true;
         }
     }
     
@@ -348,10 +290,11 @@ class Traversals{
             cout<<root->right<<' ';
         }
     }
-    void boundary(Node* root){
+    void boundary(Node* root, bool& printed){
         if(root==NULL) return;
         
         cout<<root->data<<' ';  // print root
+        printed = true;
         
         boundaryRight(root->right); //print right boundary
         
@@ -446,6 +389,7 @@ void deleteTree(Node* root){
     deleteTree(root->left);
     deleteTree(root->right);
     delete root;
+    root = NULL;
     return;
 }
 
@@ -468,6 +412,8 @@ int main() {
     	    }
     	    int val;
     	    int n;
+    	    int key;
+    	    bool printed = false;
     	    switch(query){
     	        case 'B':
     	            flag = 0;
@@ -520,7 +466,6 @@ int main() {
     	            }
     	            break;
     	        case 'F':
-    	            int key;
     	            cin>>key;
     	            if(key<=0){
     	                cout<<"No\n";
@@ -539,23 +484,31 @@ int main() {
     	            cout << metrics.getTotalNodes(root) << endl;
     	            break;
     	        case 'Q':
-    	            traversals.inorder(root);
-    	            cout<<endl;
+    	            traversals.inorder(root, printed);
+    	            if(printed){
+    	                cout<<endl;
+    	            }
     	            break;
     	        case 'W':
-    	            traversals.preorder(root);
-    	            cout<<endl;
+    	            traversals.preorder(root, printed);
+    	            if(printed){
+    	                cout<<endl;
+    	            }
     	            break;
     	        case 'E':
-    	            traversals.postorder(root);
-    	            cout<<endl;
+    	            traversals.postorder(root, printed);
+    	            if(printed){
+    	                cout<<endl;
+    	            }
     	            break;
     	        case 'H':
     	            cout<< metrics.getHeight(root) << endl;
     	            break;
     	        case 'M':
-    	            traversals.boundary(root);
-    	            cout<<endl;
+    	            traversals.boundary(root, printed);
+    	            if(printed){
+    	                cout<<endl;
+    	            }
     	            break;
     	        case 'C':
     	            int k1, k2;
@@ -601,8 +554,11 @@ int main() {
     	            break;
     	        }
     	        case 'K':
-    	            deleteTree(root);
-    	            root = NULL; // to avoid dangling pointer
+    	            // clear the memory if any memory is occupied by the tree
+        	        if(root!= NULL){
+        	            deleteTree(root);
+        	            root = NULL; // to avoid dangling pointer
+        	        }
     	            break;
     	    }
 	    }
