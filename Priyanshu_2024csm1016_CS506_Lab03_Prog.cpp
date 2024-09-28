@@ -4,17 +4,15 @@ using namespace std;
 /*
     I have the same struct to create node for BST and AVL.
     In BST, I have not updated the height.
-    In AVL, I have not updated the parent.
 */
 
 struct Node{
     int data, height;
-    Node* parent;
     Node* left;
     Node* right;
     
     Node(int val) : data(val){
-        parent = left = right = NULL;
+        left = right = NULL;
         height = 1;
     }
 };
@@ -29,20 +27,12 @@ class BST{
         }
     public:
         Node* insert(Node* root, int val){  //iterative insertion
-            Node* tRoot = root;
-            Node* node = new Node(val);  // create the node to be inserted
-            if(root == NULL) return node;  // the tree is empty
-            Node* p = root;  // stores the parent for the new node
-            while(root!=NULL){
-                p = root; // update parent for the new node
-                if(val == root->data) return tRoot; // value already present
-                if(val < root->data) root = root->left;
-                else if(val > root->data) root = root->right;
-            }
-            node->parent = p;
-            if(val < p->data) p->left = node;
-            else if(val > p->data) p->right = node;
-            return tRoot;
+            if(root==NULL) return new Node(val);
+            
+            if(val<root->data) root->left = insert(root->left, val);
+            else if(val>root->data) root->right = insert(root->right, val);
+            
+            return root;
         }
         Node* deleteNode(Node* root, int val){  // iterative deletion
             if(root==NULL) return root;
@@ -398,7 +388,7 @@ int main() {
 	cin>>test;
 	while(test--){  // run the code snipet for the number of test cases
 	    Node* root = NULL;
-	    bool flag; // to switch between AVL(1) and BST(0) trees
+	    bool flag=0; // to switch between AVL(1) and BST(0) trees
 	    while(1){
 	        char query;
     	    cin>>query;
