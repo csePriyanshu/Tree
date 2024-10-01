@@ -1,5 +1,3 @@
-#include<bits/stdc++.h>
-
 class AVL{
     private:
         int height(Node* node){
