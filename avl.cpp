@@ -1,3 +1,14 @@
+struct Node{
+    int data, height;
+    Node* left;
+    Node* right;
+    
+    Node(int val) : data(val){
+        left = right = NULL;
+        height = 1;
+    }
+};
+
 class AVL{
     private:
         int height(Node* node){
